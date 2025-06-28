@@ -54,13 +54,13 @@ index 877576461..4efd6c8b0 100644
      await bind.mainSetOption(key: kOptionVerificationMethod, value: method);
 -    /*
 -    if (method != kUsePermanentPassword) {
-+    
++
 +    if (method != kUsePermanentPassword || method != kUseBothPasswords) {
        await bind.mainSetOption(
            key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
      }
 -    */
-+    
++
    }
  
    String get temporaryPasswordLength {
@@ -69,13 +69,13 @@ index 877576461..4efd6c8b0 100644
    setApproveMode(String mode) async {
      await bind.mainSetOption(key: kOptionApproveMode, value: mode);
 -    /*
-+    
++
      if (mode != 'password') {
        await bind.mainSetOption(
            key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
      }
 -    */
-+    
++
    }
  
    bool get allowNumericOneTimePassword => _allowNumericOneTimePassword;
@@ -84,7 +84,7 @@ index 877576461..4efd6c8b0 100644
      _serverId = IDTextEditingController(text: _emptyIdShow);
  
 -    /*
-+    
++
      // initital _hideCm at startup
      final verificationMethod =
          bind.mainGetOptionSync(key: kOptionVerificationMethod);
@@ -97,7 +97,7 @@ index 877576461..4efd6c8b0 100644
        _hideCm = false;
      }
 -    */
-+    
++
  
      timerCallback() async {
        final connectionStatus =
@@ -106,7 +106,7 @@ index 877576461..4efd6c8b0 100644
      final numericOneTimePassword =
          await mainGetBoolOption(kOptionAllowNumericOneTimePassword);
 -    /*
-+    
++
      var hideCm = option2bool(
          'allow-hide-cm', await bind.mainGetOption(key: 'allow-hide-cm'));
      if (!(approveMode == 'password' &&
@@ -115,7 +115,7 @@ index 877576461..4efd6c8b0 100644
        hideCm = false;
      }
 -    */
-+    
++
      if (_approveMode != approveMode) {
        _approveMode = approveMode;
        update = true;
@@ -124,7 +124,7 @@ index 877576461..4efd6c8b0 100644
        update = true;
      }
 -    /*
-+    
++
      if (_hideCm != hideCm) {
        _hideCm = hideCm;
        if (desktopType == DesktopType.cm) {
@@ -133,7 +133,7 @@ index 877576461..4efd6c8b0 100644
        update = true;
      }
 -    */
-+    
++
      if (update) {
        notifyListeners();
      }
