@@ -2,7 +2,7 @@ diff --git a/flutter/lib/desktop/pages/desktop_setting_page.dart b/flutter/lib/d
 index 56a99446c..5991aceed 100644
 --- a/flutter/lib/desktop/pages/desktop_setting_page.dart
 +++ b/flutter/lib/desktop/pages/desktop_setting_page.dart
-@@ -1101,8 +1101,8 @@ class _SafetyState extends State<_Safety> with AutomaticKeepAliveClientMixin {
+@@ -1137,8 +1137,8 @@ class _SafetyState extends State<_Safety> with AutomaticKeepAliveClientMixin {
              if (usePassword)
                _SubButton('Set permanent password', setPasswordDialog,
                    permEnabled && !locked),
@@ -13,6 +13,15 @@ index 56a99446c..5991aceed 100644
              if (usePassword) radios[2],
            ]);
          })));
+@@ -1311,7 +1311,7 @@ class _SafetyState extends State<_Safety> with AutomaticKeepAliveClientMixin {
+         value: gFFI.serverModel,
+         child: Consumer<ServerModel>(builder: (context, model, child) {
+           final enableHideCm = model.approveMode == 'password' &&
+-              model.verificationMethod == kUsePermanentPassword;
++              (model.verificationMethod == kUsePermanentPassword || model.verificationMethod == kUseTemporaryPassword);
+           onHideCmChanged(bool? b) {
+             if (b != null) {
+               bind.mainSetOption(
 diff --git a/flutter/lib/main.dart b/flutter/lib/main.dart
 index 3032a2321..66d0d8c26 100644
 --- a/flutter/lib/main.dart
