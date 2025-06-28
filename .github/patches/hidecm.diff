@@ -39,7 +39,7 @@ index 877576461..4efd6c8b0 100644
    int _connectStatus = 0; // Rendezvous Server status
    String _verificationMethod = "";
    String _temporaryPasswordLength = "";
-@@ -63,6 +63,8 @@ class ServerModel with ChangeNotifier {
+@@ -62,6 +62,8 @@ class ServerModel with ChangeNotifier {
  
    bool get clipboardOk => _clipboardOk;
  
@@ -48,7 +48,7 @@ index 877576461..4efd6c8b0 100644
    bool get showElevation => _showElevation;
  
    int get connectStatus => _connectStatus;
-@@ -83,12 +85,12 @@ class ServerModel with ChangeNotifier {
+@@ -82,12 +84,12 @@ class ServerModel with ChangeNotifier {
  
    setVerificationMethod(String method) async {
      await bind.mainSetOption(key: kOptionVerificationMethod, value: method);
@@ -64,12 +64,12 @@ index 877576461..4efd6c8b0 100644
    }
  
    String get temporaryPasswordLength {
-@@ -105,12 +107,12 @@ class ServerModel with ChangeNotifier {
+@@ -104,12 +106,12 @@ class ServerModel with ChangeNotifier {
  
    setApproveMode(String mode) async {
      await bind.mainSetOption(key: kOptionApproveMode, value: mode);
 -    /*
-+
++ 
      if (mode != 'password') {
        await bind.mainSetOption(
            key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
@@ -78,17 +78,16 @@ index 877576461..4efd6c8b0 100644
 +
    }
  
-   bool get allowNumericOneTimePassword => _allowNumericOneTimePassword;
-@@ -133,7 +135,7 @@ class ServerModel with ChangeNotifier {
+   TextEditingController get serverId => _serverId;
+@@ -126,7 +128,6 @@ class ServerModel with ChangeNotifier {
      _emptyIdShow = translate("Generating ...");
      _serverId = IDTextEditingController(text: _emptyIdShow);
  
 -    /*
-+
      // initital _hideCm at startup
      final verificationMethod =
          bind.mainGetOptionSync(key: kOptionVerificationMethod);
-@@ -141,10 +143,10 @@ class ServerModel with ChangeNotifier {
+@@ -134,10 +135,9 @@ class ServerModel with ChangeNotifier {
      _hideCm = option2bool(
          'allow-hide-cm', bind.mainGetOptionSync(key: 'allow-hide-cm'));
      if (!(approveMode == 'password' &&
@@ -97,14 +96,13 @@ index 877576461..4efd6c8b0 100644
        _hideCm = false;
      }
 -    */
-+
  
      timerCallback() async {
        final connectionStatus =
-@@ -236,14 +238,14 @@ class ServerModel with ChangeNotifier {
+@@ -227,14 +227,14 @@ class ServerModel with ChangeNotifier {
+     final temporaryPasswordLength =
+         await bind.mainGetOption(key: "temporary-password-length");
      final approveMode = await bind.mainGetOption(key: kOptionApproveMode);
-     final numericOneTimePassword =
-         await mainGetBoolOption(kOptionAllowNumericOneTimePassword);
 -    /*
 +
      var hideCm = option2bool(
@@ -119,8 +117,8 @@ index 877576461..4efd6c8b0 100644
      if (_approveMode != approveMode) {
        _approveMode = approveMode;
        update = true;
-@@ -278,7 +280,7 @@ class ServerModel with ChangeNotifier {
-       _allowNumericOneTimePassword = numericOneTimePassword;
+@@ -265,7 +265,7 @@ class ServerModel with ChangeNotifier {
+       _temporaryPasswordLength = temporaryPasswordLength;
        update = true;
      }
 -    /*
@@ -128,7 +126,7 @@ index 877576461..4efd6c8b0 100644
      if (_hideCm != hideCm) {
        _hideCm = hideCm;
        if (desktopType == DesktopType.cm) {
-@@ -290,7 +292,7 @@ class ServerModel with ChangeNotifier {
+@@ -277,7 +277,7 @@ class ServerModel with ChangeNotifier {
        }
        update = true;
      }
