@@ -69,7 +69,7 @@ index 877576461..4efd6c8b0 100644
    setApproveMode(String mode) async {
      await bind.mainSetOption(key: kOptionApproveMode, value: mode);
 -    /*
-+ 
++
      if (mode != 'password') {
        await bind.mainSetOption(
            key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
