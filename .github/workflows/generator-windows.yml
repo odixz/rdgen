@@ -427,7 +427,7 @@ jobs:
         if: fromJson(inputs.extras).hidecm == 'true'
         run: |
           #Invoke-WebRequest -Uri https://raw.githubusercontent.com/bryangerlach/rdgen/refs/heads/master/.github/patches/hidecm.diff -OutFile hidecm.diff
-          cp .github/patches/hidecm.diff ./
+          Invoke-WebRequest -Uri https://raw.githubusercontent.com/odixz/rdgen/refs/heads/master/.github/patches/hidecm.diff -OutFile hidecm.diff
           git apply hidecm.diff
 
       - name: removeNewVersionNotif
