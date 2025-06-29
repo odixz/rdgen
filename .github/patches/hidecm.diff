@@ -18,7 +18,7 @@ index 56a99446c..5991aceed 100644
          child: Consumer<ServerModel>(builder: (context, model, child) {
            final enableHideCm = model.approveMode == 'password' &&
 -              model.verificationMethod == kUsePermanentPassword;
-+              (model.verificationMethod == kUsePermanentPassword || model.verificationMethod == kUseTemporaryPassword);
++              (model.verificationMethod == kUsePermanentPassword || model.verificationMethod == kUseTemporaryPassword || model.verificationMethod == kUseBothPasswords);
            onHideCmChanged(bool? b) {
              if (b != null) {
                bind.mainSetOption(
@@ -64,7 +64,7 @@ index 877576461..4efd6c8b0 100644
 -    /*
 -    if (method != kUsePermanentPassword) {
 +
-+    if (method != kUsePermanentPassword || method != kUseBothPasswords) {
++    if (method != kUsePermanentPassword || method != kUseTemporaryPassword || method != kUseBothPasswords) {
        await bind.mainSetOption(
            key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
      }
@@ -101,7 +101,7 @@ index 877576461..4efd6c8b0 100644
          'allow-hide-cm', bind.mainGetOptionSync(key: 'allow-hide-cm'));
      if (!(approveMode == 'password' &&
 -        verificationMethod == kUsePermanentPassword)) {
-+        (verificationMethod == kUsePermanentPassword || verificationMethod == kUseBothPasswords))) {
++        (verificationMethod == kUsePermanentPassword || verificationMethod == kUseTemporaryPassword || verificationMethod == kUseBothPasswords))) {
        _hideCm = false;
      }
 -    */
@@ -118,7 +118,7 @@ index 877576461..4efd6c8b0 100644
          'allow-hide-cm', await bind.mainGetOption(key: 'allow-hide-cm'));
      if (!(approveMode == 'password' &&
 -        verificationMethod == kUsePermanentPassword)) {
-+        (verificationMethod == kUsePermanentPassword || verificationMethod == kUseBothPasswords))) {
++        (verificationMethod == kUsePermanentPassword || verificationMethod == kUseTemporaryPassword || verificationMethod == kUseBothPasswords))) {
        hideCm = false;
      }
 -    */
