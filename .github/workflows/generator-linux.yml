@@ -824,7 +824,7 @@ jobs:
       - name: Set rdgen value
         if: ${{ fromJson(inputs.extras).rdgen == 'false' }}
         run: |
-          echo "STATUS_URL=${{ inputs.apiServer }}/api/updategh" >> $GITHUB_ENV
+          echo "STATUS_URL=${{ secrets.GENURL }}/api/updategh" >> $GITHUB_ENV
           
       - name: Report Status
         uses: fjogeleit/http-request-action@v1
