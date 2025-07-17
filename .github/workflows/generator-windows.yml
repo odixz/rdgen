@@ -268,7 +268,7 @@ jobs:
         continue-on-error: false
         shell: bash
         run: |
-          cargo update git+https://github.com/rustdesk-org/nokhwa?rev=744dea9
+          cargo update nokhwa
 
       - name: allow custom.txt
         continue-on-error: true
