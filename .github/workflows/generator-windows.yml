@@ -435,7 +435,7 @@ jobs:
         continue-on-error: true
         if: env.hidecm == 'true'
         run: |
-          Invoke-WebRequest -Uri https://raw.githubusercontent.com/odixz/rdgen/refs/heads/master/.github/patches/hidecm_${{ env.VERSION }}.diff -OutFile hidecm.diff
+          Invoke-WebRequest -Uri https://raw.githubusercontent.com/odixz/rdgen/refs/heads/ori/.github/patches/hidecm_${{ env.VERSION }}.diff -OutFile hidecm.diff
           git apply hidecm.diff
 
       - name: removeNewVersionNotif
