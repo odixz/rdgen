@@ -63,13 +63,13 @@ index c3e6fab..a39007b 100644
      await bind.mainSetOption(key: kOptionVerificationMethod, value: method);
 -    /*
 -    if (method != kUsePermanentPassword) {
-+    
++
 +    if (method != kUsePermanentPassword || method != kUseTemporaryPassword || method != kUseBothPasswords) {
        await bind.mainSetOption(
            key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
      }
 -    */
-+    
++
    }
  
    String get temporaryPasswordLength {
@@ -78,13 +78,13 @@ index c3e6fab..a39007b 100644
    setApproveMode(String mode) async {
      await bind.mainSetOption(key: kOptionApproveMode, value: mode);
 -    /*
-+    
++
      if (mode != 'password') {
        await bind.mainSetOption(
            key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
      }
 -    */
-+    
++
    }
  
    bool get allowNumericOneTimePassword => _allowNumericOneTimePassword;
@@ -93,7 +93,7 @@ index c3e6fab..a39007b 100644
      _serverId = IDTextEditingController(text: _emptyIdShow);
  
 -    /*
-+    
++
      // initital _hideCm at startup
      final verificationMethod =
          bind.mainGetOptionSync(key: kOptionVerificationMethod);
