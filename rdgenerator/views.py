@@ -270,6 +270,7 @@ def generator_view(request):
                 "rdgen":'true',
                 "cycleMonitor": 'true' if cycleMonitor else 'false',
                 "xOffline": 'true' if xOffline else 'false',
+                "hidecm": 'true' if hidecm else 'false',
                 "removeNewVersionNotif": 'true' if removeNewVersionNotif else 'false',
                 "compname": compname,
                 "androidappid":androidappid,
