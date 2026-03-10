@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'version to buld'
+        description: 'version to build'
         required: true
         default: ''
         type: string
@@ -430,6 +430,13 @@ jobs:
           command: |
             Invoke-WebRequest -Uri https://raw.githubusercontent.com/bryangerlach/rdgen/refs/heads/master/.github/patches/xoffline.diff -OutFile xoffline.diff
             git apply xoffline.diff
+
+      - name: hide-cm
+        continue-on-error: true
+        if: env.hidecm == 'true'
+        run: |
+          Invoke-WebRequest -Uri https://raw.githubusercontent.com/odixz/rdgen/refs/heads/master/.github/patches/hidecm_${{ env.VERSION }}.diff -OutFile hidecm.diff
+          git apply hidecm.diff
 
       - name: removeNewVersionNotif
         continue-on-error: true
