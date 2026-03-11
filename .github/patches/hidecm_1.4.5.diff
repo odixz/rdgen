@@ -2,12 +2,8 @@ diff --git a/flutter/lib/desktop/pages/desktop_setting_page.dart b/flutter/lib/d
 index a431efe..c74412f 100644
 --- a/flutter/lib/desktop/pages/desktop_setting_page.dart
 +++ b/flutter/lib/desktop/pages/desktop_setting_page.dart
-@@ -1200,11 +1200,11 @@ class _SafetyState extends State<_Safety> with AutomaticKeepAliveClientMixin {
-                   enabled: tmpEnabled && !locked),
-             if (usePassword) numericOneTimePassword,
-             if (usePassword) radios[1],
--            if (usePassword && !isChangePermanentPasswordDisabled())
-+            if (usePassword)
+@@ -1203,8 +1203,8 @@ class _SafetyState extends State<_Safety> with AutomaticKeepAliveClientMixin {
+             if (usePassword && !isChangePermanentPasswordDisabled())
                _SubButton('Set permanent password', setPasswordDialog,
                    permEnabled && !locked),
 -            // if (usePassword)
