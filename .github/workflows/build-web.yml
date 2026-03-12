@@ -35,6 +35,7 @@ jobs:
       - name: Build web
         shell: bash
         run: |
+          mkdir flutter/web/v2
           pushd flutter/web/v2
           npm install yarn -g
           npm install typescript -g
