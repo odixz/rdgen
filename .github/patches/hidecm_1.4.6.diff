@@ -1,7 +1,7 @@
 diff --git a/flutter/lib/desktop/pages/desktop_setting_page.dart b/flutter/lib/desktop/pages/desktop_setting_page.dart
 index 82212d1..9cd49d0 100644
 --- a/flutter/lib/desktop/pages/desktop_setting_page.dart
-+++ b/desktop_setting_page.dart
++++ b/flutter/lib/desktop/pages/desktop_setting_page.dart
 @@ -1213,8 +1213,8 @@ class _SafetyState extends State<_Safety> with AutomaticKeepAliveClientMixin {
              if (usePassword && !isChangePermanentPasswordDisabled())
                _SubButton('Set permanent password', setPasswordDialog,
@@ -25,7 +25,7 @@ index 82212d1..9cd49d0 100644
 diff --git a/flutter/lib/main.dart b/flutter/lib/main.dart
 index 91773af..aa28800 100644
 --- a/flutter/lib/main.dart
-+++ b/main.dart
++++ b/flutter/lib/main.dart
 @@ -294,7 +294,7 @@ void runConnectionManagerScreen() async {
      MyTheme.currentThemeMode(),
    );
@@ -38,7 +38,7 @@ index 91773af..aa28800 100644
 diff --git a/flutter/lib/models/server_model.dart b/flutter/lib/models/server_model.dart
 index 5892ed0..dc5ff7f 100644
 --- a/flutter/lib/models/server_model.dart
-+++ b/server_model.dart
++++ b/flutter/lib/models/server_model.dart
 @@ -31,7 +31,7 @@ class ServerModel with ChangeNotifier {
    bool _fileOk = false;
    bool _clipboardOk = false;
