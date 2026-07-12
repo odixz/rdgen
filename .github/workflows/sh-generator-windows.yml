@@ -32,7 +32,7 @@ env:
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
   ARMV7_VCPKG_COMMIT_ID: "6f29f12e82a8293156836ad81cc9bf5af41fe836"
   VERSION: "${{ inputs.version }}"
-  NDK_VERSION: "r27c"
+  NDK_VERSION: "r28c"
   #signing keys env variable checks
   ANDROID_SIGNING_KEY: "${{ secrets.ANDROID_SIGNING_KEY }}"
   MACOS_P12_BASE64: "${{ secrets.MACOS_P12_BASE64 }}"
@@ -122,15 +122,6 @@ jobs:
         run: |
           echo "STATUS_URL=${{ env.apiServer }}/api/updategh" >> $env:GITHUB_ENV
 
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        continue-on-error: true
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "5% complete"}'
-
       - name: Checkout source code
         if: ${{ env.VERSION != 'master' }}
         uses: actions/checkout@v4
@@ -217,14 +208,22 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./flutter/lib/desktop/pages/desktop_setting_page.dart
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./res/msi/preprocess.py
+          sed -i -e 's|r"Purslane(?: Tech Pte\\.)? Ltd"|"${{ env.compname }}"|' ./res/msi/preprocess.py
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./flutter/windows/runner/Runner.rc
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./Cargo.toml
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./libs/portable/Cargo.toml
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./res/msi/Package/License.rtf
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./src/main.rs
           sed -i -e 's|Purslane Ltd|${{ env.compname }}|' ./flutter/lib/desktop/pages/desktop_setting_page.dart
           sed -i -e 's|PURSLANE|${{ env.compname }}|' ./res/msi/preprocess.py
           sed -i -e 's|Purslane Ltd|${{ env.compname }}|' ./res/msi/preprocess.py
-          sed -i -e 's|"Copyright © 2025 Purslane Ltd. All rights reserved."|"Copyright © 2025 ${{ env.compname }}. All rights reserved."|' ./flutter/windows/runner/Runner.rc
           sed -i -e 's|Purslane Ltd|${{ env.compname }}|' ./flutter/windows/runner/Runner.rc
           sed -i -e 's|Purslane Ltd|${{ env.compname }}|' ./Cargo.toml
           sed -i -e 's|Purslane Ltd|${{ env.compname }}|' ./libs/portable/Cargo.toml
           sed -i -e 's|Purslane Ltd|${{ env.compname }}|' ./res/msi/Package/License.rtf
+          sed -i -e 's|Purslane Ltd|${{ env.compname }}|' ./src/main.rs
              
       - name: change url to custom
         if: env.urlLink != 'https://rustdesk.com'
@@ -248,6 +247,8 @@ jobs:
           sed -i -e 's|https://rustdesk.com/download|${{ env.downloadLink }}|' ./flutter/lib/desktop/pages/desktop_home_page.dart
           sed -i -e 's|https://rustdesk.com/download|${{ env.downloadLink }}|' ./flutter/lib/mobile/pages/connection_page.dart
           sed -i -e 's|https://rustdesk.com/download|${{ env.downloadLink }}|' ./src/ui/index.tis
+          sed -i -e 's|&download_url|"${{ env.downloadLink }}"|' ./src/updater.rs
+          sed -i -e 's|$downloadUrl/$downloadFile|${{ env.downloadLink }}|' ./flutter/lib/desktop/widgets/update_progress.dart
 
       - name: set server, key, and apiserver
         continue-on-error: true
@@ -270,25 +271,7 @@ jobs:
             python allowCustom.py
             # Remove Setup Server Tip
             Invoke-WebRequest -Uri https://raw.githubusercontent.com/bryangerlach/rdgen/refs/heads/master/.github/patches/removeSetupServerTip.diff -OutFile removeSetupServerTip.diff
-            git apply removeSetupServerTip.diff
-
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        continue-on-error: true
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "10% complete"}'      
-        
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        continue-on-error: true
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "20% complete"}'
+            git apply removeSetupServerTip.diff  
           
       - name: magick stuff
         if: ${{ env.iconlink_url != 'false' }}
@@ -364,15 +347,6 @@ jobs:
           sed -i -e 's|updateUrl.isNotEmpty|false|' ./flutter/lib/desktop/pages/desktop_home_page.dart
           sed -i '/let (request, url) =/,/Ok(())/{/Ok(())/!d}' ./src/common.rs
 
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        continue-on-error: true
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "25% complete"}'
-
       - name: replace flutter icons
         if: ${{ env.iconlink_url != 'false' }}
         continue-on-error: true
@@ -382,15 +356,6 @@ jobs:
           flutter pub get
           flutter pub run flutter_launcher_icons
           cd ..
-
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        continue-on-error: true
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "50% complete"}'
 
       - name: Build rustdesk
         run: |
@@ -472,15 +437,6 @@ jobs:
         with:
           name: topmostwindow-artifacts
           path: "./rustdesk"
-
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        continue-on-error: true
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "70% complete"}'
       
       - name: zip dlls
         continue-on-error: true
@@ -545,15 +501,6 @@ jobs:
           mv ./Package/bin/x64/Release/en-us/Package.msi ../../SignOutput/rustdesk.msi
           sha256sum ../../SignOutput/rustdesk.msi
 
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        continue-on-error: true
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "85% complete"}'
-
       - name: zip exe and msi
         continue-on-error: true
         shell: pwsh
@@ -612,32 +559,6 @@ jobs:
           command: |
             curl -i -X POST -H "Content-Type: multipart/form-data" -H "Authorization: Bearer ${{ env.token }}" -F "file=@./SignOutput/${{ env.filename }}.exe" ${{ env.apiServer }}/api/save_custom_client
             curl -i -X POST -H "Content-Type: multipart/form-data" -H "Authorization: Bearer ${{ env.token }}" -F "file=@./SignOutput/${{ env.filename }}.msi" ${{ env.apiServer }}/api/save_custom_client || true
-
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "Success"}'
-
-      - name: failed
-        if: failure()
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "Generation failed, try again"}'
-
-      - name: failed
-        if: cancelled()
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "Generation cancelled, try again"}'
 
   cleanup:
     needs: [build-for-windows-flutter]

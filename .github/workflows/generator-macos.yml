@@ -32,7 +32,7 @@ env:
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
   ARMV7_VCPKG_COMMIT_ID: "6f29f12e82a8293156836ad81cc9bf5af41fe836"
   VERSION: "${{ inputs.version }}"
-  NDK_VERSION: "r27c"
+  NDK_VERSION: "r28c"
   #signing keys env variable checks
   ANDROID_SIGNING_KEY: "${{ secrets.ANDROID_SIGNING_KEY }}"
   MACOS_P12_BASE64: "${{ secrets.MACOS_P12_BASE64 }}"
@@ -106,14 +106,6 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "5% complete"}'
-
       - name: Checkout source code
         if: ${{ env.VERSION != 'master' }}
         uses: actions/checkout@v4
@@ -153,11 +145,18 @@ jobs:
           # MACSTUFF Update AppInfo.xcconfig
           sed -i '' -e 's|PRODUCT_NAME = .*|PRODUCT_NAME = ${{ env.appname }}|' ./flutter/macos/Runner/Configs/AppInfo.xcconfig
           sed -i '' -e 's|PRODUCT_BUNDLE_IDENTIFIER = .*|PRODUCT_BUNDLE_IDENTIFIER = com.${{ env.appname }}.app|' ./flutter/macos/Runner/Configs/AppInfo.xcconfig
-          sed -i '' -e 's|Purslane Ltd.|${{ env.appname }}|' ./flutter/macos/Runner/Configs/AppInfo.xcconfig
+          sed -i '' -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./flutter/macos/Runner/Configs/AppInfo.xcconfig
+          sed -i '' -e 's|Purslane Ltd.|${{ env.compname }}|' ./flutter/macos/Runner/Configs/AppInfo.xcconfig
           # Keep DEVELOPMENT_TEAM if it exists, don't blank it out
 
-          sed -i -e 's|Purslane Ltd.|${{ env.appname }}|' ./Cargo.toml
-          sed -i -e 's|Purslane Ltd|${{ env.appname }}|' ./libs/portable/Cargo.toml
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./Cargo.toml
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./libs/portable/Cargo.toml
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./flutter/lib/desktop/pages/desktop_setting_page.dart
+          sed -i -e 's|Purslane Tech Pte. Ltd.|${{ env.compname }}|' ./src/main.rs
+          sed -i -e 's|Purslane Ltd.|${{ env.compname }}|' ./Cargo.toml
+          sed -i -e 's|Purslane Ltd.|${{ env.compname }}|' ./libs/portable/Cargo.toml
+          sed -i -e 's|Purslane Ltd.|${{ env.compname }}|' ./flutter/lib/desktop/pages/desktop_setting_page.dart
+          sed -i -e 's|Purslane Ltd|${{ env.compname }}|' ./src/main.rs
           
           # Update Xcode project settings
           sed -i '' -e 's/PRODUCT_NAME = "RustDesk"/PRODUCT_NAME = "${{ env.appname }}"/' ./flutter/macos/Runner.xcodeproj/project.pbxproj
@@ -194,6 +193,8 @@ jobs:
           sed -i -e 's|https://rustdesk.com/download|${{ env.downloadLink }}|' ./flutter/lib/desktop/pages/desktop_home_page.dart
           sed -i -e 's|https://rustdesk.com/download|${{ env.downloadLink }}|' ./flutter/lib/mobile/pages/connection_page.dart
           sed -i -e 's|https://rustdesk.com/download|${{ env.downloadLink }}|' ./src/ui/index.tis
+          sed -i -e 's|&download_url|"${{ env.downloadLink }}"|' ./src/updater.rs
+          sed -i -e 's|$downloadUrl/$downloadFile|${{ env.downloadLink }}|' ./flutter/lib/desktop/widgets/update_progress.dart
 
           # Update slogan
           #sed -i '' '/<key>NSHumanReadableCopyright<\/key>/{n;s/<string>.*<\/string>/<string>Copyright 2025 ${{ env.appname }}. All rights reserved.<\/string>/;}' ./flutter/macos/Runner/Info.plist
@@ -223,15 +224,7 @@ jobs:
           echo "  archive: ^3.6.1" > ./flutter/temp_dependency.txt
           awk '/intl:/{print;system("cat ./flutter/temp_dependency.txt");next}1' ./flutter/pubspec.yaml > ./flutter/pubspec.yaml.tmp
           mv ./flutter/pubspec.yaml.tmp ./flutter/pubspec.yaml
-          rm ./flutter/temp_dependency.txt
-
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "10% complete"}'   
+          rm ./flutter/temp_dependency.txt 
           
       - name: Install build runtime
         run: |
@@ -466,14 +459,6 @@ jobs:
           sed -i -e 's|updateUrl.isNotEmpty|false|' ./flutter/lib/desktop/pages/desktop_home_page.dart
           sed -i '/let (request, url) =/,/Ok(())/{/Ok(())/!d}' ./src/common.rs
 
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "20% complete"}'
-
       - name: Restore bridge files
         uses: actions/download-artifact@master
         with:
@@ -502,14 +487,6 @@ jobs:
           fi
           head -n 100 "${VCPKG_ROOT}/buildtrees/ffmpeg/build-${{ matrix.job.vcpkg-triplet }}-rel-out.log" || true
 
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "25% complete"}'
-
       - name: Create MacOS directory structure
         run: |
           mkdir -p ./build/macos/Build/Products/Release/RustDesk.app/Contents/MacOS
@@ -529,14 +506,6 @@ jobs:
       # - name: Copy service file
       #   run: |
       #     cp -rf ../target/release/service ./build/macos/Build/Products/Release/RustDesk.app/Contents/MacOS/
-
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "50% complete, this step takes about 5 minutes, be patient."}'
       
       - name: Install rcodesign tool
         if: env.MACOS_P12_BASE64 != null
@@ -557,14 +526,6 @@ jobs:
           else
               brew install pkg-config
           fi
-
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "70% complete, this step takes about 5 minutes, be patient."}'
   
       - name: Show version information (Rust, cargo, Clang)
         shell: bash
@@ -606,14 +567,6 @@ jobs:
           wget --no-check-certificate \
             -O "$ASSETS_DIR/logo.png" \
             "${{ env.logolink_url }}/get_png?filename=${{ env.logolink_file }}&uuid=${{ env.logolink_uuid }}"
-
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "85% complete"}'
 
       - name: Sign macOS app bundle
         if: env.MACOS_P12_BASE64 != ''
@@ -741,32 +694,6 @@ jobs:
             -H "Authorization: Bearer ${{ env.token }}" \
             -F "file=@$GITHUB_WORKSPACE/${{ env.filename }}-${{ matrix.job.arch }}.dmg" \
             "${{ env.apiServer }}/api/save_custom_client"
-
-      - name: Report Status
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "Success"}'
-
-      - name: failed
-        if: failure()
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "Generation failed, try again"}'
-
-      - name: failed
-        if: cancelled()
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ env.STATUS_URL }}
-          method: 'POST'
-          customHeaders: '{"Content-Type": "application/json"}'
-          data: '{"uuid": "${{ env.uuid }}", "status": "Generation cancelled, try again"}'
 
   cleanup:
     needs: [build-for-macos]
