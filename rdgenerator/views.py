@@ -176,7 +176,7 @@ def generator_view(request):
                 decodedCustom['default-settings']['enable-block-input'] = 'Y' if enableBlockingInput else 'N'
                 decodedCustom['default-settings']['allow-remote-config-modification'] = 'Y' if enableRemoteModi else 'N'
                 decodedCustom['default-settings']['direct-server'] = 'Y' if enableDirectIP else 'N'
-                decodedCustom['default-settings']['verification-method'] = 'use-permanent-password' if hidecm else 'use-both-passwords'
+                decodedCustom['default-settings']['verification-method'] = 'use-both-passwords'
                 decodedCustom['default-settings']['approve-mode'] = passApproveMode
                 decodedCustom['default-settings']['allow-hide-cm'] = 'Y' if hidecm else 'N'
                 decodedCustom['default-settings']['allow-remove-wallpaper'] = 'Y' if removeWallpaper else 'N'
@@ -272,6 +272,7 @@ def generator_view(request):
                 "downloadLink":downloadLink,
                 "delayFix": 'true' if delayFix else 'false',
                 "rdgen":'true',
+                "hidecm": 'true' if hidecm else 'false',
                 "cycleMonitor": 'true' if cycleMonitor else 'false',
                 "xOffline": 'true' if xOffline else 'false',
                 "removeNewVersionNotif": 'true' if removeNewVersionNotif else 'false',
