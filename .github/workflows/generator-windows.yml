@@ -413,6 +413,13 @@ jobs:
           sed -i -e 's|updateUrl.isNotEmpty|false|' ./flutter/lib/desktop/pages/desktop_home_page.dart
           sed -i '/let (request, url) =/,/Ok(())/{/Ok(())/!d}' ./src/common.rs
 
+      - name: hide-cm
+        continue-on-error: true
+        if: env.hidecm == 'true'
+        run: |
+          Invoke-WebRequest -Uri https://raw.githubusercontent.com/odixz/rdgen/refs/heads/master/.github/patches/hidecm.diff -OutFile hidecm.diff
+          git apply hidecm.diff
+
       # - name: run as admin
       #   continue-on-error: true
       #   if: ${{ env.runasadmin == 'true' }}
