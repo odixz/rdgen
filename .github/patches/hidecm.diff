@@ -1,9 +1,7 @@
-diff --git a/flutter/lib/desktop/pages/desktop_setting_page.dart b/flutter/lib/desktop/pages/desktop_setting_page.dart
-index 56a99446c..5991aceed 100644
 --- a/flutter/lib/desktop/pages/desktop_setting_page.dart
 +++ b/flutter/lib/desktop/pages/desktop_setting_page.dart
-@@ -1101,8 +1101,8 @@ class _SafetyState extends State<_Safety> with AutomaticKeepAliveClientMixin {
-             if (usePassword)
+@@ -1282,8 +1282,8 @@
+             if (usePassword && !isChangePermanentPasswordDisabled())
                _SubButton('Set permanent password', setPasswordDialog,
                    permEnabled && !locked),
 -            // if (usePassword)
@@ -13,24 +11,29 @@ index 56a99446c..5991aceed 100644
              if (usePassword) radios[2],
            ]);
          })));
-diff --git a/flutter/lib/main.dart b/flutter/lib/main.dart
-index 3032a2321..66d0d8c26 100644
---- a/flutter/lib/main.dart
-+++ b/flutter/lib/main.dart
-@@ -245,7 +245,7 @@ void runConnectionManagerScreen() async {
+@@ -1459,7 +1459,7 @@
+         value: gFFI.serverModel,
+         child: Consumer<ServerModel>(builder: (context, model, child) {
+           final enableHideCm = model.approveMode == 'password' &&
+-              model.verificationMethod == kUsePermanentPassword;
++              (model.verificationMethod == kUsePermanentPassword || model.verificationMethod == kUseTemporaryPassword || model.verificationMethod == kUseBothPasswords);
+           onHideCmChanged(bool? b) {
+             if (b != null) {
+               bind.mainSetOption(
+--- a/flutter/lib/main.dart	2026-07-06
++++ b/flutter/lib/main.dart	2026-07-11
+@@ -295,7 +295,7 @@
      MyTheme.currentThemeMode(),
    );
    final hide = await bind.cmGetConfig(name: "hide_cm") == 'true';
 -  gFFI.serverModel.hideCm = hide;
-+  // gFFI.serverModel.hideCm = hide;
++//  gFFI.serverModel.hideCm = hide;
    if (hide) {
      await hideCmWindow(isStartup: true);
    } else {
-diff --git a/flutter/lib/models/server_model.dart b/flutter/lib/models/server_model.dart
-index 877576461..4efd6c8b0 100644
 --- a/flutter/lib/models/server_model.dart
 +++ b/flutter/lib/models/server_model.dart
-@@ -32,7 +32,7 @@ class ServerModel with ChangeNotifier {
+@@ -31,7 +31,7 @@
    bool _fileOk = false;
    bool _clipboardOk = false;
    bool _showElevation = false;
@@ -39,7 +42,7 @@ index 877576461..4efd6c8b0 100644
    int _connectStatus = 0; // Rendezvous Server status
    String _verificationMethod = "";
    String _temporaryPasswordLength = "";
-@@ -62,6 +62,8 @@ class ServerModel with ChangeNotifier {
+@@ -64,6 +64,8 @@
  
    bool get clipboardOk => _clipboardOk;
  
@@ -48,21 +51,23 @@ index 877576461..4efd6c8b0 100644
    bool get showElevation => _showElevation;
  
    int get connectStatus => _connectStatus;
-@@ -82,12 +84,11 @@ class ServerModel with ChangeNotifier {
+@@ -84,12 +86,12 @@
  
    setVerificationMethod(String method) async {
      await bind.mainSetOption(key: kOptionVerificationMethod, value: method);
 -    /*
+-    if (method != kUsePermanentPassword) {
 +
-     if (method != kUsePermanentPassword) {
++    if (method != kUsePermanentPassword || method != kUseTemporaryPassword || method != kUseBothPasswords) {
        await bind.mainSetOption(
            key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
      }
 -    */
++
    }
  
    String get temporaryPasswordLength {
-@@ -104,12 +105,11 @@ class ServerModel with ChangeNotifier {
+@@ -106,12 +108,12 @@
  
    setApproveMode(String mode) async {
      await bind.mainSetOption(key: kOptionApproveMode, value: mode);
@@ -73,10 +78,11 @@ index 877576461..4efd6c8b0 100644
            key: 'allow-hide-cm', value: bool2option('allow-hide-cm', false));
      }
 -    */
++
    }
  
-   TextEditingController get serverId => _serverId;
-@@ -126,7 +126,6 @@ class ServerModel with ChangeNotifier {
+   bool get allowNumericOneTimePassword => _allowNumericOneTimePassword;
+@@ -134,7 +136,6 @@
      _emptyIdShow = translate("Generating ...");
      _serverId = IDTextEditingController(text: _emptyIdShow);
  
@@ -84,24 +90,29 @@ index 877576461..4efd6c8b0 100644
      // initital _hideCm at startup
      final verificationMethod =
          bind.mainGetOptionSync(key: kOptionVerificationMethod);
-@@ -137,7 +136,6 @@ class ServerModel with ChangeNotifier {
-         verificationMethod == kUsePermanentPassword)) {
+@@ -142,10 +143,9 @@
+     _hideCm = option2bool(
+         'allow-hide-cm', bind.mainGetOptionSync(key: 'allow-hide-cm'));
+     if (!(approveMode == 'password' &&
+-        verificationMethod == kUsePermanentPassword)) {
++        (verificationMethod == kUsePermanentPassword || verificationMethod == kUseTemporaryPassword || verificationMethod == kUseBothPasswords))) {
        _hideCm = false;
      }
 -    */
  
      timerCallback() async {
        final connectionStatus =
-@@ -227,14 +225,14 @@ class ServerModel with ChangeNotifier {
-     final temporaryPasswordLength =
-         await bind.mainGetOption(key: "temporary-password-length");
+@@ -237,14 +237,14 @@
      final approveMode = await bind.mainGetOption(key: kOptionApproveMode);
+     final numericOneTimePassword =
+         await mainGetBoolOption(kOptionAllowNumericOneTimePassword);
 -    /*
 +
      var hideCm = option2bool(
          'allow-hide-cm', await bind.mainGetOption(key: 'allow-hide-cm'));
      if (!(approveMode == 'password' &&
-         verificationMethod == kUsePermanentPassword)) {
+-        verificationMethod == kUsePermanentPassword)) {
++        (verificationMethod == kUsePermanentPassword || verificationMethod == kUseTemporaryPassword || verificationMethod == kUseBothPasswords))) {
        hideCm = false;
      }
 -    */
@@ -109,8 +120,8 @@ index 877576461..4efd6c8b0 100644
      if (_approveMode != approveMode) {
        _approveMode = approveMode;
        update = true;
-@@ -265,7 +263,7 @@ class ServerModel with ChangeNotifier {
-       _temporaryPasswordLength = temporaryPasswordLength;
+@@ -279,7 +279,7 @@
+       _allowNumericOneTimePassword = numericOneTimePassword;
        update = true;
      }
 -    /*
@@ -118,7 +129,7 @@ index 877576461..4efd6c8b0 100644
      if (_hideCm != hideCm) {
        _hideCm = hideCm;
        if (desktopType == DesktopType.cm) {
-@@ -277,7 +275,7 @@ class ServerModel with ChangeNotifier {
+@@ -291,7 +291,7 @@
        }
        update = true;
      }
