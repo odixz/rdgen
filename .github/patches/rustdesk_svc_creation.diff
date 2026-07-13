@@ -1,8 +1,6 @@
---- a/src/platform/windows.rs
-+++ b/src/platform/windows.rs
-@@ -3686,7 +3686,7 @@ pub fn get_tray_shortcut(
- fn get_import_config(exe: &str) -> String {
-     if config::is_outgoing_only() {
+--- a/src/platform/windows.rs	2026-07-13 10:02:03.676479500 +0700
++++ b/src/platform/windows.rs	2026-07-13 13:40:35.923804600 +0700
+@@ -3688,12 +3688,12 @@
          return "".to_string();
      }
      format!("
@@ -21,17 +19,7 @@
  ",
      app_name = crate::get_app_name(),
      config_path=Config::file().to_str().unwrap_or(""),
- )
- }
- 
- fn get_create_service(exe: &str) -> String {
-     if config::is_outgoing_only() {
-         return "".to_string();
-     }
-     let stop = Config::get_option("stop-service") == "Y";
-     if stop {
-         format!("
- if exist \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\" del /f /q \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\"
+@@ -3711,8 +3711,8 @@
  ", app_name = crate::get_app_name())
      } else {
          format!("
@@ -42,4 +30,3 @@
  ",
      app_name = crate::get_app_name())
      }
- }
