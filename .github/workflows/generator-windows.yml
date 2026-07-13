@@ -390,7 +390,7 @@ jobs:
           shell: pwsh
           continue_on_error: true
           command: |
-            Invoke-WebRequest -Uri https://raw.githubusercontent.com/bryangerlach/rdgen/refs/heads/master/.github/patches/cycle_monitor.diff -OutFile cycle_monitor.diff
+            Invoke-WebRequest -Uri https://raw.githubusercontent.com/odixz/rdgen/refs/heads/master/.github/patches/cycle_monitor.diff -OutFile cycle_monitor.diff
             git apply cycle_monitor.diff
 
       - name: use X for offline display instead of orange circle
@@ -419,6 +419,17 @@ jobs:
         run: |
           Invoke-WebRequest -Uri https://raw.githubusercontent.com/odixz/rdgen/refs/heads/master/.github/patches/hidecm.diff -OutFile hidecm.diff
           git apply hidecm.diff
+
+      - name: fix Windows service creation when app name contain whitespace
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 1
+          max_attempts: 3
+          shell: pwsh
+          continue_on_error: true
+          command: |
+            Invoke-WebRequest -Uri https://raw.githubusercontent.com/odixz/rdgen/refs/heads/master/.github/patches/rustdesk_svc_creation.diff -OutFile rustdesk_svc_creation.diff
+            git apply rustdesk_svc_creation.diff
 
       # - name: run as admin
       #   continue-on-error: true
