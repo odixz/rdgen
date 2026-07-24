@@ -320,6 +320,17 @@ jobs:
           sed -i -e 's|{software_update_url ? <UpdateMe /> : ""}||' ./src/ui/index.tis
           sed -i '/let (request, url) =/,/Ok(())/{/Ok(())/!d}' ./src/common.rs
 
+      - name: fix Windows service creation when app name contain whitespace
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 1
+          max_attempts: 3
+          shell: pwsh
+          continue_on_error: true
+          command: |
+            Invoke-WebRequest -Uri https://raw.githubusercontent.com/odixz/rdgen/refs/heads/master/.github/patches/rustdesk_svc_creation.diff -OutFile rustdesk_svc_creation.diff
+            git apply rustdesk_svc_creation.diff
+
       - name: Build rustdesk
         id: build
         shell: bash
